@@ -14,19 +14,31 @@ def dot(x: float, y: float):
 
 def line(x1: float, y1: float, x2: float, y2: float):
     """Рисует линию от точки (x1, y1) до точки (x2, y2)."""
-    # меньшая по x точка слева
+
+    # первой точкой считается та, что левее
     if x1 > x2:
         x1, y1, x2, y2 = x2, y2, x1, y1
 
-    dist = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)  # расстояние между точками
-    step = dist / int(dist)  # шаг отрисовки
+    dist = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    delta = (x2 - x1) / dist
 
-    x, y = x1, y1
-    while x < x2:
-        x += step
-        y = (x - x1) * (y2 - y1) / (x2 - x1) + y1
+    # частный случай, когда координата x совпадает
+    if x2 == x1:
+        if y1 > y2:
+            x1, y1, x2, y2 = x2, y2, x1, y1
 
-        dot(x, y)
+        delta = (y2 - y1) / dist
+        while y1 < y2:
+            dot(x1, y1)
+            y1 += delta
+
+        return None
+
+    k = (y2 - y1) / (x2 - x1)
+    while x1 < x2:
+        dot(x1, y1)
+        x1 += delta
+        y1 += k * delta
 
 
 def rectangle(x1: float, y1: float, x2: float, y2: float):
@@ -51,6 +63,7 @@ def rectangle(x1: float, y1: float, x2: float, y2: float):
 
 
 def triangle(x1, y1, x2, y2, x3, y3):
+    """Рисует треугольник."""
     line(x1, y1, x2, y2)
     line(x2, y2, x3, y3)
     line(x3, y3, x1, y1)
@@ -65,6 +78,13 @@ def circle(x0: float, y0: float, r: float):
         dot(x, y)
 
 
+def dist(x1: float, y1: float, x2: float, y2: float):
+    """Функция для вычисления расстояния между двумя точками."""
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+circle(-100, 0, 100)
 triangle(123, 12, 23, 17, 84, 91)
+rectangle(-250, 250, 0, 400)
 
 turtle.mainloop()
