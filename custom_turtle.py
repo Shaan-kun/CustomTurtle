@@ -2,46 +2,37 @@ import turtle
 import math
 
 
-def dot(x: float, y: float):
+def dist(x1: float, y1: float, x2: float, y2: float):
+    """Функция для вычисления расстояния между точками."""
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+
+def dot(x: int, y: int, size: int = 3):
     """Ставит точку в позиции с координатами (x, y)."""
     turtle.tracer(0)
     turtle.speed(0)
     turtle.penup()
     turtle.hideturtle()
     turtle.setposition(x, y)
-    turtle.dot()
+    turtle.dot(size)
 
 
-def line(x1: float, y1: float, x2: float, y2: float):
+def line(x1: int, y1: int, x2: int, y2: int):
     """Рисует линию от точки (x1, y1) до точки (x2, y2)."""
-
-    # первой точкой считается та, что левее
+    # алгоритм Брезенхэма
     if x1 > x2:
-        x1, y1, x2, y2 = x2, y2, x1, y1
+        x1, x2 = x2, x1
+        y1, y2 = y2, y1
 
-    s = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-    delta = (x2 - x1) / s
+    x, y = x1, y1
+    while x < x2:
+        dot(x, y)
 
-    # частный случай, когда координата x совпадает
-    if x2 == x1:
-        if y1 > y2:
-            x1, y1, x2, y2 = x2, y2, x1, y1
-
-        delta = (y2 - y1) / s
-        while y1 < y2:
-            dot(x1, y1)
-            y1 += delta
-
-        return None
-
-    k = (y2 - y1) / (x2 - x1)
-    while x1 < x2:
-        dot(x1, y1)
-        x1 += delta
-        y1 += k * delta
+        x += 1
+        y = (y2 - y1) / (x2 - x1) * (x - x1) + y1
 
 
-def rectangle(x1: float, y1: float, x2: float, y2: float):
+def rectangle(x1: int, y1: int, x2: int, y2: int):
     """Рисует прямоугольник.
 
     (x1, y1) -> левый верхний угол
@@ -56,6 +47,7 @@ def rectangle(x1: float, y1: float, x2: float, y2: float):
     a3 = x_max, y_max
     a4 = x_min, y_max
 
+    # рисуем 4 линии - стороны прямоугольника
     line(*a1, *a2)
     line(*a2, *a3)
     line(*a3, *a4)
