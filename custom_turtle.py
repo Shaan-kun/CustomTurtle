@@ -24,12 +24,21 @@ def line(x1: int, y1: int, x2: int, y2: int):
         x1, x2 = x2, x1
         y1, y2 = y2, y1
 
-    x, y = x1, y1
-    while x < x2:
+    delta_x = abs(x2 - x1)
+    delta_y = abs(y2 - y1)
+
+    error = 0
+    detla_error = (delta_y + 1) / (delta_x + 1)
+    y = y1
+    dir_y = 1 if y2 > y1 else -1 if y2 < y1 else 0
+    for x in range(x1, x2):
         dot(x, y)
 
-        x += 1
-        y = (y2 - y1) / (x2 - x1) * (x - x1) + y1
+        error += detla_error
+        if error >= 1:
+            y += dir_y
+            error -= 1
+
 
 
 def rectangle(x1: int, y1: int, x2: int, y2: int):
