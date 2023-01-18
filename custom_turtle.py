@@ -8,7 +8,7 @@ def dist(x1: float, y1: float, x2: float, y2: float):
 
 
 def dot(x: int, y: int, size: int = 3):
-    """Ставит точку в позиции с координатами (x, y)."""
+    """Ставит точку в позиции с координатами (x, y) толщиной size."""
     turtle.tracer(0)
     turtle.speed(0)
     turtle.penup()
@@ -20,24 +20,35 @@ def dot(x: int, y: int, size: int = 3):
 def line(x1: int, y1: int, x2: int, y2: int):
     """Рисует линию от точки (x1, y1) до точки (x2, y2)."""
     # алгоритм Брезенхэма
+
+    # проверка роста отрезка по оси x и по оси y
+    steep = abs(y2 - y1) > abs(x2 - x1)
+
+    # отражаем линию по диагонали, если угол наклона большой
+    if steep:
+        x1, y1 = y1, x1
+        x2, y2 = y2, x2
+
+    # меняем начало и конце местами, если направление не слева направо
     if x1 > x2:
         x1, x2 = x2, x1
         y1, y2 = y2, y1
 
-    delta_x = abs(x2 - x1)
-    delta_y = abs(y2 - y1)
-
-    error = 0
-    detla_error = (delta_y + 1) / (delta_x + 1)
+    dx = x2 - x1
+    dy = abs(y2 - y1)
+    # оптимизация с умножением на dx для избавления от лишних дробей
+    error = dx / 2
+    # направление роста координаты y
+    ystep = 1 if y1 < y2 else -1
     y = y1
-    dir_y = 1 if y2 > y1 else -1 if y2 < y1 else 0
-    for x in range(x1, x2):
-        dot(x, y)
+    for x in range(x1, x2 + 1):
+        # возвращаем координаты на место и рисуем точку
+        dot(y if steep else x, x if steep else y)
 
-        error += detla_error
-        if error >= 1:
-            y += dir_y
-            error -= 1
+        error -= dy
+        if error < 0:
+            y += ystep
+            error += dx
 
 
 
@@ -51,10 +62,10 @@ def rectangle(x1: int, y1: int, x2: int, y2: int):
     y_min, y_max = min(y1, y2), max(y1, y2)
 
     # собираем 4 точки - углы прямоугольника
-    a1 = x_min, y_min
-    a2 = x_max, y_min
-    a3 = x_max, y_max
-    a4 = x_min, y_max
+    a1 = x_min, y_max
+    a2 = x_max, y_max
+    a3 = x_max, y_min
+    a4 = x_min, y_min
 
     # рисуем 4 линии - стороны прямоугольника
     line(*a1, *a2)
